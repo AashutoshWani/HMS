@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Hospital Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #E0F4FB;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
+            color: #FFFFFF;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(8,145,178,0.3);
+        }
+        
+        .navbar h1 {
+            font-size: 24px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            color: #06B6D4;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: #FFFFFF;
+            border: 1px solid #A5E4F3;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 12px 30px rgba(8,145,178,0.20);
+            margin-bottom: 25px;
+        }
+        
+        .doctor-summary {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E0F4FB;
+        }
+        
+        .doctor-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        
+        .doctor-info h2 {
+            color: #0F172A;
+            margin-bottom: 5px;
+        }
+        
+        .specialization {
+            color: #06B6D4;
+            font-weight: 600;
+        }
+        
+        .fee-display {
+            color: #10B981;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            color: #0F172A;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .date-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #A5E4F3;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            background: #FFFFFF;
+            color: #0F172A;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #22D3EE;
+            box-shadow: 0 0 0 1px #A5E4F3;
+        }
+        
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .slot-btn {
+            padding: 12px;
+            border: 2px solid #7DD3FC;
+            background: #F0FBFF;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #0F172A;
+        }
+        
+        .slot-btn:hover:not(:disabled) {
+            border-color: #22D3EE;
+            background: #BAE6FD;
+        }
+        
+        .slot-btn.selected {
+            background: #0EA5E9;
+            color: #FFFFFF;
+            border-color: #0EA5E9;
+        }
+        
+        .slot-btn:disabled {
+            background: #F8FEFF;
+            color: #94A3B8;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            border-color: #CBD5E1;
+        }
+        
+        .confirm-btn {
+            width: 100%;
+            padding: 15px;
+            background: #0EA5E9;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(14,165,233,0.45);
+        }
+        
+        .confirm-btn:hover:not(:disabled) {
+            background: #0284C7;
+            transform: scale(1.02);
+        }
+        
+        .confirm-btn:disabled {
+            background: #94A3B8;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .timer {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            color: #92400E;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .summary-box {
+            background: #F8FEFF;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #A5E4F3;
+        }
+        
+        .summary-box h4 {
+            margin-bottom: 15px;
+            color: #0F172A;
+        }
+        
+        .summary-box p {
+            margin: 8px 0;
+            color: #475569;
+        }
+        
+        .summary-box strong {
+            color: #0F172A;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏥 Hospital Management</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="doctors.html">Book Appointment</a>
+            <a href="appointments.html">My Appointments</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <a href="doctors.html" class="back-btn">← Back to Doctors</a>
+        
+        <div id="loading" class="loading">
+            <h3>Loading doctor details...</h3>
+        </div>
+        
+        <div id="bookingContent" class="hidden">
+            <div class="card">
+                <div class="doctor-summary">
+                    <div class="doctor-avatar" id="doctorAvatar"></div>
+                    <div class="doctor-info">
+                        <h2 id="doctorName"></h2>
+                        <div class="specialization" id="doctorSpecialization"></div>
+                        <div class="fee-display" id="doctorFee"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="section-title">📅 Select Date</h3>
+                <input type="date" id="appointmentDate" class="date-input" onchange="loadSlots()">
+            </div>
+            
+            <div class="card" id="slotsSection" style="display: none;">
+                <h3 class="section-title">🕒 Select Time Slot</h3>
+                <div id="slotsMessage"></div>
+                <div class="slots-grid" id="slotsGrid"></div>
+            </div>
+            
+            <div class="card" id="confirmSection" style="display: none;">
+                <div id="timerDiv" class="timer hidden">
+                    ⏱️ Slot locked! Complete booking in: <span id="timer">5:00</span>
+                </div>
+                
+                <h3 class="section-title">✅ Confirm Appointment</h3>
+                
+                <div class="summary-box">
+                    <h4>Booking Summary</h4>
+                    <p><strong>Doctor:</strong> <span id="summaryDoctor"></span></p>
+                    <p><strong>Date:</strong> <span id="summaryDate"></span></p>
+                    <p><strong>Time:</strong> <span id="summaryTime"></span></p>
+                    <p style="margin-top: 10px; font-size: 18px;"><strong>Amount to Pay:</strong> <span style="color: #10B981;" id="summaryFee"></span></p>
+                </div>
+                
+                <button class="confirm-btn" onclick="confirmBooking()">
+                    💳 Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let doctorData = null;
+        let selectedDate = null;
+        let selectedTime = null;
+        let lockTimer = null;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const doctorId = urlParams.get('doctorId');
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!token || !user || user.role !== 'patient') {
+                window.location.href = 'auth.html';
+                return false;
+            }
+            return true;
+        }
+        
+        async function loadDoctorDetails() {
+            if (!checkAuth()) return;
+            
+            if (!doctorId) {
+                alert('No doctor selected');
+                window.location.href = 'doctors.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/doctors/${doctorId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    doctorData = data.doctor;
+                    displayDoctorInfo();
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('appointmentDate').min = today;
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('bookingContent').classList.remove('hidden');
+                } else {
+                    alert('Error loading doctor details');
+                    window.location.href = 'doctors.html';
+                }
+            } catch (error) {
+                console.error('Load doctor error:', error);
+                alert('Connection error');
+            }
+        }
+        
+        function displayDoctorInfo() {
+            document.getElementById('doctorAvatar').textContent = doctorData.name.charAt(0);
+            document.getElementById('doctorName').textContent = doctorData.name;
+            document.getElementById('doctorSpecialization').textContent = doctorData.specialization;
+            document.getElementById('doctorFee').textContent = `Consultation Fee: ₹${doctorData.consultation_fee}`;
+        }
+        
+        async function loadSlots() {
+            selectedDate = document.getElementById('appointmentDate').value;
+            
+            if (!selectedDate) return;
+            
+            const slotsSection = document.getElementById('slotsSection');
+            const slotsGrid = document.getElementById('slotsGrid');
+            const slotsMessage = document.getElementById('slotsMessage');
+            
+            slotsSection.style.display = 'block';
+            slotsMessage.innerHTML = '<p style="text-align: center; color: #475569;">Loading slots...</p>';
+            slotsGrid.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_URL}/doctors/${doctorId}/slots/${selectedDate}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    slotsMessage.innerHTML = '';
+                    displaySlots(data.slots);
+                } else {
+                    slotsMessage.innerHTML = '<p style="color: #DC2626;">Error loading slots</p>';
+                }
+            } catch (error) {
+                console.error('Load slots error:', error);
+                slotsMessage.innerHTML = '<p style="color: #DC2626;">Connection error</p>';
+            }
+        }
+        
+        function displaySlots(slots) {
+            const slotsGrid = document.getElementById('slotsGrid');
+            
+            if (slots.length === 0) {
+                slotsGrid.innerHTML = '<p>No slots available for this date</p>';
+                return;
+            }
+            
+            slotsGrid.innerHTML = slots.map(slot => {
+                const time24 = slot.time.substring(0, 5);
+                const [hours, minutes] = time24.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const hour12 = hour % 12 || 12;
+                const time12 = `${hour12}:${minutes} ${ampm}`;
+                
+                return `
+                    <button 
+                        class="slot-btn" 
+                        onclick="selectSlot('${slot.time}')"
+                        ${!slot.available ? 'disabled' : ''}
+                    >
+                        ${time12}
+                    </button>
+                `;
+            }).join('');
+        }
+        
+        async function selectSlot(time) {
+            selectedTime = time;
+            
+            document.querySelectorAll('.slot-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            await lockSlot();
+        }
+        
+        async function lockSlot() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_URL}/slots/lock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        doctorId: doctorId,
+                        date: selectedDate,
+                        time: selectedTime
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showConfirmationSection();
+                    startTimer();
+                } else {
+                    alert(data.message || 'Slot is no longer available');
+                    loadSlots();
+                }
+            } catch (error) {
+                console.error('Lock slot error:', error);
+                alert('Error locking slot');
+            }
+        }
+        
+        function showConfirmationSection() {
+            document.getElementById('confirmSection').style.display = 'block';
+            document.getElementById('summaryDoctor').textContent = doctorData.name;
+            document.getElementById('summaryDate').textContent = selectedDate;
+            
+            const [hours, minutes] = selectedTime.substring(0, 5).split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            const time12 = `${hour12}:${minutes} ${ampm}`;
+            document.getElementById('summaryTime').textContent = time12;
+            
+            document.getElementById('summaryFee').textContent = `₹${doctorData.consultation_fee}`;
+            
+            document.getElementById('confirmSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function startTimer() {
+            const timerDiv = document.getElementById('timerDiv');
+            const timerSpan = document.getElementById('timer');
+            timerDiv.classList.remove('hidden');
+            
+            let seconds = 300;
+            
+            lockTimer = setInterval(() => {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timerSpan.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (seconds <= 0) {
+                    clearInterval(lockTimer);
+                    alert('Time expired! Slot unlocked. Please select again.');
+                    location.reload();
+                }
+            }, 1000);
+        }
+        
+        function confirmBooking() {
+            clearInterval(lockTimer);
+            
+            const [hours, minutes] = selectedTime.substring(0, 5).split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            const time12 = `${hour12}:${minutes} ${ampm}`;
+            
+            const params = new URLSearchParams({
+                doctorId: doctorId,
+                doctorName: doctorData.name,
+                specialization: doctorData.specialization,
+                date: selectedDate,
+                time: selectedTime,
+                timeDisplay: time12,
+                amount: doctorData.consultation_fee
+            });
+            
+            window.location.href = `payment.html?${params.toString()}`;
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'auth.html';
+        }
+        
+        loadDoctorDetails();
+    </script>
+</body>
+</html>
